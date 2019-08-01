@@ -8,7 +8,9 @@ A small application and interface for using Whole-Genome Markov (WGM) models for
 Copy the wgm binary to your /usr/local/bin or add it to PATH.
 Order is an integer ranging from 1 to 12.  Higher orders tend to produce higher accuracy, but are more influenced by pseudocount additions.
 ```
-wgm <genome file> <order> <metagenomic fasta>
+python3 fastaProc.py <metagenomic fasta file> > <filtered metagenomic fasta file>
+python3 fastaProc.py <genome file> > <filtered genome file>
+wgm <filtered genome file> <order> <filtered metagenomic fasta>
 ```
 ### File Restrictions and Formatting
 
@@ -22,7 +24,7 @@ The included fastaProc.py script can be used to filter out all non-standard char
 A python script is included that uses wgm to perform bulk analysis of metagenomic reads.  Multiple (filtered) genomes can be included in the Genomes directory.  The script evokes wgm and passes the desired order and output file destination.
 
 ```
-python3 wgm.py <metagenomic fasta> <output file> <order>
+python3 wgm.py <filtered metagenomic fasta> <output file> <order>
 ```
 Output is a tab-delimited spreadsheet with log10 probability scores for all read (columns) and genome (rows) pairs.
 Genomes producing the highest probability for a given read are most likely to share taxonomic origins.
