@@ -21,4 +21,4 @@ a.write('\n')
 a.close()
 
 for g in genomes:
-    os.system('./wgm4 ' + g + ' ' + order + ' ' + read_file + ' >>' + out_file)
+    os.system('wgm ' + g + ' ' + order + ' ' + read_file + ' >>' + out_file)
