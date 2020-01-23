@@ -25,4 +25,10 @@ python3 SMM.py Metagenomic_Reads.fasta Metagenomic_Read_Scores.tsv 12
 ```
 ./smm Genomes.txt Metagenomic_Reads.fasta 12 >> Metagenomic_Read_Scores.tsv
 ```
+## A Note on Output
 
+SMM reports the log-probability that a read originated from a genome based on the single-order markov model constructed from all of the information contained within that genome.  There is no magic number or cutoff that dictates whether a score represents an actual taxonomic match.  One genomic model producing a higher score than another simply means that the read being scored is *more likely* to have originated from that model than the other.
+
+Used as an accompaniment to other taxonomic classifiers, such as kmer/alignment-based tools, SMM can help you determine the closest relative within your genomic database from which a read might have originated.  Given the nature of SMM's modeling, the likliehood that a read and its highest scoring model share their lineage increases as you traverse upwards through the taxonomic ranks (Order --> Class --> Phylum), a characteristic not shared by alignment.
+
+It would be disingenuous to provide a binary (yes/no) classification for each read, as the relationship between probability and classification is highly variable dependent on the database being used and the metagenome being classified.  Users are encouraged, however, to test their own databases with simulated fragments to establish a baseline for their conclusions.
