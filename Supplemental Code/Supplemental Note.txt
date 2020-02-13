@@ -1,0 +1,26 @@
+The binaries for generating 8th order deleted-interpolation models (DIM) and 8th order interpolated markov models (IMM) have been provided as  
+interpolation_model_command_line_input and deleted_interpolation_model_command_line_input, respectively.
+
+Each program takes a single string of genomic information (A,T,G or C characters only) in a text file, and generates the initial and transitional probabilities
+of all 8mers and nucleotides at the 8+1 position into two separate files.  A numerical ID represents each 8mer as the indices for each file, and can be converted using
+the associations {A = 1;T = 2;C = 3;G = 4}.  A sample python script has been included that can convert the IDs to Kmers as nucEncoder.py.
+
+./interpolation_model_command_line_input Single_String_Genome.txt
+
+Eighth order ICMs were constructed by modifying the buildICMs_userAdded.pl script included with PhymmBL v4.0 in the .scripts directory of the main 
+installation.  The -d and -w parameters were changed from their defaults to 8 on line 126 as such:
+
+LINE 126:   my $command = ".scripts/.icmCode/bin/build-icm -d 8 -w 8 -p 1 $dir/$prefix.icm < $dir/$trainFile";
+   
+This allows for the construction of 8th order ICMs during the build-icm invocation used by PhymmBL's customGenomicData.pl script.
+
+Technical details for the methodology behind each model type are available in their respective publications:
+
+Deleted Interoplation (DIM)
+https://www.ncbi.nlm.nih.gov/pubmed/14751980
+
+Interoplated Markov Models
+https://www.ncbi.nlm.nih.gov/pubmed/9421513
+
+Interpolated Context Models (ICM)
+https://www.ncbi.nlm.nih.gov/pubmed/10556321
