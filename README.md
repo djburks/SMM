@@ -1,7 +1,7 @@
 # SMM
 Single-Order Markov Model (SMM) Builder
 
-A small application for generating single-order markov models for metagenomic classification.  The base program accepts metagenomic read files (in FASTA format), a text directory of genomic FASTA files to model, and user-defined order.  The log probability of each read originating from each supplied genome is printed to stout (or redirected with the supplied Python script).  Normalized probability scores can be exported for 12th order analyses. 
+A small application for generating single-order markov models for metagenomic classification.  The base program accepts metagenomic read files (in FASTA format), a text directory of genomic FASTA files to model, and user-defined order.  Please note that high orders (13+) use significant memory.  The log probability of each read originating from each supplied genome is printed to stout (or redirected with the supplied Python script).  Normalized probability scores can be exported for 12th order analyses.  Trying to use an order other than 12 with the norm parameter will result in a warning (if using the supplied Python script), and reversion to raw scores.
 
 Metagenomic reads are fully loaded into memory, and converted to markov-chain indices for rapid calculation of probabilities. Markov chains are built directly from genomic FASTA files, and kept in memory until all reads have been classified.  There is no database construction step.
 
