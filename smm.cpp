@@ -1,5 +1,3 @@
-// Support for up to 12th order by limiting array size to 4*12 (16777216)
-
 # include <fstream>
 # include <string>
 # include <sstream>
@@ -64,7 +62,8 @@ int index(std::string k) {
 // 1-4 for transitional specific counts, 0 for total.
 
 std::vector<std::vector<double>> smm(std::string genomefile, int order) {
-    std::vector<std::vector<double>> model(5,std::vector<double> (16777216,1));
+    int klim = (int)pow(4,order) + 1;
+    std::vector<std::vector<double>> model(5,std::vector<double> (klim,1));
     std::string line;
     std::string genome = "";
     std::ifstream infile(genomefile);
@@ -146,9 +145,18 @@ int rindex(std::string k) {
     return ridex;
 }
 
+// Normalization for average 12th order scores based on read length across all models.
+
+double normScore(float rawscore,int readlen) {
+    float denom;
+    denom = (-0.605185747917117*readlen) + 0.228066296087579;
+    return rawscore/denom;
+}
+
 int main(int argc, char *argv[]) {
     std::string readfile = argv[2];
     int order = std::stoi(argv[3]);
+    std::string scoretype = argv[4];
     std::vector<std::string> mfasta = readlibrary(readfile);
     std::string r(order,'A');
     std::string e(order,'C');
@@ -159,6 +167,7 @@ int main(int argc, char *argv[]) {
     std::vector<std::vector<int>> column;
     std::vector<std::vector<int>> rcolumn;
     std::vector<std::vector<int>> rrow;
+    std::vector<int> mflen;
     
     for (auto& it: mfasta) {
         std::vector<int> temprow,tempcol,temprrow,temprcol;
@@ -204,7 +213,7 @@ int main(int argc, char *argv[]) {
         column.push_back(tempcol);
         rcolumn.push_back(temprcol);
         rrow.push_back(temprrow);
-
+        mflen.push_back(it.length());
     }
     
 // For every genome in the linked genome fasta list, cycle through and build model.
@@ -215,21 +224,44 @@ int main(int argc, char *argv[]) {
     while(std::getline(genomefastafile,genomeline)) {
         genomes.push_back(genomeline);
     }
-    for (auto& genome: genomes) {
-        std::string probline = genome;
-        std::vector<std::vector<double>> smmmodel = smm(genome,order);
-        for(int i2=0; i2 < row.size(); i2++) {
-            double forprob = 0;
-            double revprob = 0;
-            for(int i3=0; i3 < row[i2].size(); i3++) {
-                forprob = forprob + smmmodel[row[i2][i3]][column[i2][i3]];
-                revprob = revprob + smmmodel[rrow[i2][i3]][rcolumn[i2][i3]];
+
+    if (scoretype == "norm") {
+            for (auto& genome: genomes) {
+                std::string probline = genome;
+                std::vector<std::vector<double>> smmmodel = smm(genome,order);
+                for(int i2=0; i2 < row.size(); i2++) {
+                    double forprob = 0;
+                    double revprob = 0;
+                    for(int i3=0; i3 < row[i2].size(); i3++) {
+                        forprob = forprob + smmmodel[row[i2][i3]][column[i2][i3]];
+                        revprob = revprob + smmmodel[rrow[i2][i3]][rcolumn[i2][i3]];
+                    }
+                    probline.append("\t" + std::to_string(normScore(std::max(forprob,revprob),mflen[i2])));
+                }
+                std::cout << probline << "\n";
+
             }
-            probline.append("\t" + std::to_string(std::max(forprob,revprob)));
-        }
-        std::cout << probline << "\n";
-
     }
+    
+    else {
+            for (auto& genome: genomes) {
+                std::string probline = genome;
+                std::vector<std::vector<double>> smmmodel = smm(genome,order);
+                for(int i2=0; i2 < row.size(); i2++) {
+                    double forprob = 0;
+                    double revprob = 0;
+                    for(int i3=0; i3 < row[i2].size(); i3++) {
+                        forprob = forprob + smmmodel[row[i2][i3]][column[i2][i3]];
+                        revprob = revprob + smmmodel[rrow[i2][i3]][rcolumn[i2][i3]];
+                    }
+                    probline.append("\t" + std::to_string(std::max(forprob,revprob)));
+                }
+                std::cout << probline << "\n";
 
+            }
+    }
+    
+
+    
     return 0;
 }
