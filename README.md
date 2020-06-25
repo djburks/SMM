@@ -30,7 +30,7 @@ python3 SMM.py Metagenomic_Reads.fasta Metagenomic_Read_Scores.tsv 12 norm
 ```
 python3 SMM.py Metagenomic_Reads.fasta Metagenomic_Read_Scores.tsv 8 raw
 ```
-### Running Directly with Normalization (8th Order)
+### Running Directly without Normalization (8th Order)
 ```
 ./smm Genomes.txt Metagenomic_Reads.fasta 8 raw >> Metagenomic_Read_Scores.tsv
 ```
